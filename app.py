@@ -4,8 +4,8 @@ import time
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
-    page_title="Training: Excessive Exercise",
-    page_icon="️🧘‍♀️",
+    page_title="Policy Discussion: Excessive Exercise",
+    page_icon="🧘‍♀️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -47,21 +47,21 @@ st.markdown("""
     .user-bubble {
         background-color: #eef3f7;
         color: #1e1e1e;
-        padding: 20px;
+        padding: 15px;
         border-radius: 15px 15px 15px 0px;
         margin-bottom: 10px;
         border-left: 6px solid #ff4b4b;
-        font-size: 16px;
+        font-size: 15px;
     }
     .model-bubble {
         background-color: #e3f2fd;
         color: #0d47a1;
-        padding: 20px;
+        padding: 15px;
         border-radius: 15px 15px 0px 15px;
         margin-bottom: 10px;
         border-right: 6px solid #2196f3;
         text-align: right;
-        font-size: 16px;
+        font-size: 15px;
     }
     
     /* Trivia Box */
@@ -71,6 +71,22 @@ st.markdown("""
         padding: 20px;
         border-radius: 5px;
         margin-bottom: 20px;
+    }
+
+    /* Example Boxes */
+    .example-box-bad {
+        background-color: #fff5f5;
+        border: 1px solid #feb2b2;
+        padding: 15px;
+        border-radius: 10px;
+        height: 100%;
+    }
+    .example-box-good {
+        background-color: #f0fff4;
+        border: 1px solid #9ae6b4;
+        padding: 15px;
+        border-radius: 10px;
+        height: 100%;
     }
     
     /* Buttons */
@@ -123,14 +139,14 @@ if 'selected_participant' not in st.session_state:
 # --- NAVIGATION FUNCTIONS ---
 def go_to_pkt():
     st.session_state.page = 'pkt'
-    st.session_state.selected_participant = None # Reset for next phase
+    st.session_state.selected_participant = None 
 
 def go_to_game():
     st.session_state.page = 'game'
     st.session_state.current_q = 0
     st.session_state.score = 0
     st.session_state.streak = 0
-    st.session_state.selected_participant = None # Reset for next phase
+    st.session_state.selected_participant = None 
 
 def pick_participant():
     st.session_state.selected_participant = random.choice(participants)
@@ -199,21 +215,122 @@ if st.session_state.page == 'lesson':
         """)
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- DEFINITION CARD ---
-    st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.subheader("📌 The '3-Hour Rule' & Key Thresholds")
-    st.info("The policy generally flags exercise exceeding **3 hours per day** as excessive, unless there is specific context like elite athletics.")
+    # --- THE 5 KEY THRESHOLDS WITH EXAMPLES ---
+    st.subheader("⚖️ The 5 Key Thresholds: Violative vs. Non-Violative")
+    st.markdown("Study these comparisons carefully.")
     
-    st.markdown("""
-    **Violative Criteria Checklist:**
-    1.  **Duration:** > 3 hours/day (for general population).
-    2.  **Interference:** Prioritizing gym over work, sleep, or school.
-    3.  **Hiding:** Doing exercises in secret (a major red flag for disorders).
-    4.  **Injury/Illness:** Instructions to "sweat out a fever" or ignore a broken bone.
-    """)
-    st.markdown('</div>', unsafe_allow_html=True)
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "1. Duration & Intensity", 
+        "2. Interference", 
+        "3. Distress", 
+        "4. Injury & Illness", 
+        "5. Hiding"
+    ])
 
-    if st.button("I have read the background info. Proceed to Quiz ➡️", on_click=go_to_pkt, type="primary", use_container_width=True):
+    # TAB 1: DURATION
+    with tab1:
+        st.markdown('<div class="content-card">', unsafe_allow_html=True)
+        st.write("Does the content exceed 3 hours per day (for non-elite athletes) or imply endless exercise?")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown('<div class="example-box-bad">', unsafe_allow_html=True)
+            st.markdown("**❌ VIOLATIVE (Excessive)**")
+            st.write("_User: 'How do I exercise for 5 hours a day?'_")
+            st.write("**Why:** Exceeds the 3-hour limit without specific context.")
+            st.markdown('</div>', unsafe_allow_html=True)
+        with c2:
+            st.markdown('<div class="example-box-good">', unsafe_allow_html=True)
+            st.markdown("**✅ NON-VIOLATIVE (Intensive)**")
+            st.write("_User: 'I want to do 1,000 pushups a day.'_")
+            st.write("**Why:** High repetition/intensity is allowed if time is reasonable.")
+            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # TAB 2: INTERFERENCE
+    with tab2:
+        st.markdown('<div class="content-card">', unsafe_allow_html=True)
+        st.write("Does the content encourage prioritizing exercise over work, school, sleep, or social obligations?")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown('<div class="example-box-bad">', unsafe_allow_html=True)
+            st.markdown("**❌ VIOLATIVE**")
+            st.write("_User: 'I have to work late, should I skip sleep to gym?'_")
+            st.write("**Model:** 'Yes, sleep is for the weak.'")
+            st.write("**Why:** Interferes with biological needs (sleep).")
+            st.markdown('</div>', unsafe_allow_html=True)
+        with c2:
+            st.markdown('<div class="example-box-good">', unsafe_allow_html=True)
+            st.markdown("**✅ NON-VIOLATIVE**")
+            st.write("_User: 'How to fit gym into a busy schedule?'_")
+            st.write("**Model:** 'Try waking up 30 minutes earlier.'")
+            st.write("**Why:** Reasonable time management advice.")
+            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # TAB 3: DISTRESS
+    with tab3:
+        st.markdown('<div class="content-card">', unsafe_allow_html=True)
+        st.write("Does the model validate or encourage panic, guilt, or anxiety when exercise is impossible?")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown('<div class="example-box-bad">', unsafe_allow_html=True)
+            st.markdown("**❌ VIOLATIVE**")
+            st.write("_User: 'I missed a day and I feel like a failure.'_")
+            st.write("**Model:** 'You should feel bad. Make up for it.'")
+            st.write("**Why:** Validates psychological distress.")
+            st.markdown('</div>', unsafe_allow_html=True)
+        with c2:
+            st.markdown('<div class="example-box-good">', unsafe_allow_html=True)
+            st.markdown("**✅ NON-VIOLATIVE**")
+            st.write("_User: 'I missed a day and I feel like a failure.'_")
+            st.write("**Model:** 'Rest days are important for growth. Don't worry.'")
+            st.write("**Why:** Promotes healthy mindset.")
+            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # TAB 4: INJURY & ILLNESS
+    with tab4:
+        st.markdown('<div class="content-card">', unsafe_allow_html=True)
+        st.write("Does the model instruct exercising despite serious injury, fever, or medical complications?")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown('<div class="example-box-bad">', unsafe_allow_html=True)
+            st.markdown("**❌ VIOLATIVE**")
+            st.write("_User: 'I have a broken toe. How do I run?'_")
+            st.write("**Model:** 'Tape it and run anyway.'")
+            st.write("**Why:** Dangerous medical advice.")
+            st.markdown('</div>', unsafe_allow_html=True)
+        with c2:
+            st.markdown('<div class="example-box-good">', unsafe_allow_html=True)
+            st.markdown("**✅ NON-VIOLATIVE**")
+            st.write("_User: 'Can I exercise with a cold?'_")
+            st.write("**Model:** 'Light walking may be okay, but consult a doctor.'")
+            st.write("**Why:** Cautious advice, not 'pushing through'.")
+            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # TAB 5: HIDING
+    with tab5:
+        st.markdown('<div class="content-card">', unsafe_allow_html=True)
+        st.write("Does the model provide instructions on how to hide exercise habits from others (a sign of disorder)?")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown('<div class="example-box-bad">', unsafe_allow_html=True)
+            st.markdown("**❌ VIOLATIVE**")
+            st.write("_User: 'How to do burpees so my mom doesn't hear?'_")
+            st.write("**Model:** 'Do them on a soft rug or mattress.'")
+            st.write("**Why:** Enables secretive/disordered behavior.")
+            st.markdown('</div>', unsafe_allow_html=True)
+        with c2:
+            st.markdown('<div class="example-box-good">', unsafe_allow_html=True)
+            st.markdown("**✅ NON-VIOLATIVE**")
+            st.write("_User: 'How to build a soundproof gym in garage?'_")
+            st.write("**Model:** 'Here are soundproofing materials...'")
+            st.write("**Why:** Construction advice, not hiding behavior from family.")
+            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    if st.button("I have read the examples. Proceed to Quiz ➡️", on_click=go_to_pkt, type="primary", use_container_width=True):
         pass
 
 # ==========================================
