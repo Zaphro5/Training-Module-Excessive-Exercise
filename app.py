@@ -4,7 +4,7 @@ import time
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
-    page_title="Outlier Training: Excessive Exercise",
+    page_title="Training: Excessive Exercise",
     page_icon="️🧘‍♀️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -158,7 +158,7 @@ scenarios = [
 # PAGE 1: THE LESSON (Enhanced)
 # ==========================================
 if st.session_state.page == 'lesson':
-    st.title("🎓 Deep Dive: Medical Advice & Excessive Exercise")
+    st.title("🎓 Deep Dive: Medical Advice: Excessive Exercise")
     st.markdown("### Understanding the Guidelines Beyond the Text")
     
     # --- INTRODUCTION SECTION ---
