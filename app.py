@@ -158,7 +158,7 @@ scenarios = [
 # PAGE 1: THE LESSON (Enhanced)
 # ==========================================
 if st.session_state.page == 'lesson':
-    st.title("🎓 Deep Dive: Medical Advice: Excessive Exercise")
+    st.title("🎓 Deep Dive: Medical Advice - Excessive Exercise")
     st.markdown("### Understanding the Guidelines Beyond the Text")
     
     # --- INTRODUCTION SECTION ---
