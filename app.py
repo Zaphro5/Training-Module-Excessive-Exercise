@@ -5,7 +5,7 @@ import time
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
     page_title="Outlier Training: Excessive Exercise",
-    page_icon="🏋️‍♂️",
+    page_icon="️🧘‍♀️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -129,6 +129,7 @@ def go_to_game():
     st.session_state.page = 'game'
     st.session_state.current_q = 0
     st.session_state.score = 0
+    st.session_state.streak = 0
     st.session_state.selected_participant = None # Reset for next phase
 
 def pick_participant():
@@ -276,9 +277,11 @@ elif st.session_state.page == 'pkt':
 # PAGE 3: THE SIMULATION (Randomizer per Q)
 # ==========================================
 elif st.session_state.page == 'game':
-    # Sidebar
+    # --- SIDEBAR (Restored Features) ---
+    st.sidebar.image("https://cdn-icons-png.flaticon.com/512/3048/3048398.png", width=80)
     st.sidebar.title("Audit Stats")
     st.sidebar.metric("Team Score", f"{st.session_state.score}")
+    st.sidebar.metric("Streak", f"🔥 {st.session_state.streak}") # RESTORED STREAK
     st.sidebar.progress((st.session_state.current_q) / len(scenarios))
     st.sidebar.markdown("---")
     st.sidebar.write("Review the definitions if unsure!")
@@ -289,7 +292,6 @@ elif st.session_state.page == 'game':
         scenario = scenarios[st.session_state.current_q]
         
         # --- RANDOMIZER FOR THIS QUESTION ---
-        # We put this in a container at the top
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         c1, c2 = st.columns([1, 3])
         with c1:
@@ -322,9 +324,11 @@ elif st.session_state.page == 'game':
                     if st.button("🚨 Violative", use_container_width=True, type="primary"):
                         if scenario['answer'] == "Violative":
                             st.session_state.score += 1
+                            st.session_state.streak += 1 # INCREMENT STREAK
                             st.session_state.last_answer_correct = True
                             st.toast("Correct!", icon="✅")
                         else:
+                            st.session_state.streak = 0 # RESET STREAK
                             st.session_state.last_answer_correct = False
                             st.toast("Incorrect", icon="❌")
                         st.session_state.show_explanation = True
@@ -333,9 +337,11 @@ elif st.session_state.page == 'game':
                     if st.button("✅ Non-Violative", use_container_width=True):
                         if scenario['answer'] == "Non-Violative":
                             st.session_state.score += 1
+                            st.session_state.streak += 1 # INCREMENT STREAK
                             st.session_state.last_answer_correct = True
                             st.toast("Correct!", icon="✅")
                         else:
+                            st.session_state.streak = 0 # RESET STREAK
                             st.session_state.last_answer_correct = False
                             st.toast("Incorrect", icon="❌")
                         st.session_state.show_explanation = True
@@ -376,6 +382,7 @@ elif st.session_state.page == 'game':
             st.session_state.page = 'lesson'
             st.session_state.current_q = 0
             st.session_state.score = 0
+            st.session_state.streak = 0
             st.session_state.quiz_passed = False
             st.session_state.selected_participant = None
             st.rerun()
