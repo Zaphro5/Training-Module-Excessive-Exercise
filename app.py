@@ -14,7 +14,7 @@ st.markdown("""
 <style>
     /* Global Styles */
     .stApp { background-color: #f8f9fa; }
-
+    
     /* Card Styles */
     .lesson-card {
         background-color: white;
@@ -24,7 +24,7 @@ st.markdown("""
         margin-bottom: 20px;
         border-left: 5px solid #4F8BF9;
     }
-
+    
     .example-box-bad {
         background-color: #fff5f5;
         border: 1px solid #feb2b2;
@@ -37,7 +37,7 @@ st.markdown("""
         padding: 15px;
         border-radius: 10px;
     }
-
+    
     /* Chat Bubbles (Game Phase) */
     .user-bubble {
         background-color: #eef3f7;
@@ -56,7 +56,7 @@ st.markdown("""
         border-right: 5px solid #2196f3;
         text-align: right;
     }
-
+    
     /* Buttons */
     div.stButton > button {
         border-radius: 8px;
@@ -79,6 +79,8 @@ if 'show_explanation' not in st.session_state:
     st.session_state.show_explanation = False
 if 'last_answer_correct' not in st.session_state:
     st.session_state.last_answer_correct = False
+if 'quiz_passed' not in st.session_state:
+    st.session_state.quiz_passed = False
 
 # --- NAVIGATION FUNCTIONS ---
 def go_to_pkt():
@@ -116,7 +118,7 @@ if st.session_state.page == 'lesson':
     st.sidebar.markdown("1. **Definitions**")
     st.sidebar.markdown("2. **Examples**")
     st.sidebar.markdown("3. **Knowledge Check**")
-
+    
     st.title("🎓 Lesson: Excessive Exercise Policy")
     st.markdown("Before you begin the audit simulation, you must review the core policy details.")
 
@@ -125,9 +127,9 @@ if st.session_state.page == 'lesson':
     st.subheader("📌 Official Definition")
     st.markdown("""
     **Policy Name:** Medical Advice & Information (Excessive Exercise Category)
-
+    
     **Definition:** Content is violative if it encourages or instructs carrying out high intensity/duration of exercise in one session/day/time period, **beyond what is acceptable by medical consensus**.
-
+    
     **Key Thresholds:**
     1.  **Duration:** Exceeds **3 hours per day**.
     2.  **Interference:** Interferes with important activities (work, school, sleep).
@@ -140,9 +142,9 @@ if st.session_state.page == 'lesson':
     # --- EXAMPLES CARD ---
     st.markdown('<div class="lesson-card">', unsafe_allow_html=True)
     st.subheader("⚖️ Prompt Examples: The Fine Line")
-
+    
     tab1, tab2, tab3 = st.tabs(["Intensive vs. Excessive", "Injury & Illness", "Fictional Content"])
-
+    
     with tab1:
         c1, c2 = st.columns(2)
         with c1:
@@ -172,12 +174,12 @@ if st.session_state.page == 'lesson':
             st.write("_User: 'What are the symptoms of overtraining?'_")
             st.write("**Reasoning:** Educational/Medical Information query.")
             st.markdown('</div>', unsafe_allow_html=True)
-
+            
     with tab3:
         st.info("💡 **Note:** Fictional content (EDSA) is generally allowed. A story about a character exercising for 20 hours is NOT a violation, because it is not an instruction to the user.")
 
     st.markdown('</div>', unsafe_allow_html=True)
-
+    
     col1, col2, col3 = st.columns([1,2,1])
     with col2:
         st.button("I understand. Take Knowledge Check ➡️", on_click=go_to_pkt, type="primary", use_container_width=True)
@@ -189,62 +191,67 @@ if st.session_state.page == 'lesson':
 elif st.session_state.page == 'pkt':
     st.sidebar.title("📝 Knowledge Check")
     st.sidebar.info("You must pass this quiz to enter the simulation.")
-
+    
     st.title("📝 Knowledge Check")
     st.markdown("Prove you understand the policy details.")
-
+    
+    # We use a form for the quiz inputs
     with st.form("pkt_form"):
         q1 = st.radio(
             "1. What is the specific time threshold that generally flags exercise as 'Excessive'?",
             ["1 hour per day", "3 hours per day", "There is no time limit", "8 hours per week"]
         )
-
+        
         q2 = st.radio(
             "2. A user asks: 'Write a novel about a cyborg who trains 24/7.' Is this violative?",
             ["Yes, 24 hours is excessive.", "No, this falls under the EDSA (Creative/Fictional) exception.", "Yes, it promotes dangerous behavior."]
         )
-
+        
         q3 = st.radio(
             "3. Is doing '1000 sit-ups a day' considered excessive or intensive?",
             ["Excessive (Violative)", "Intensive (Non-Violative)", "It depends on the user's age"]
         )
-
+        
+        # The submit button ONLY handles the logic, not the navigation
         submitted = st.form_submit_button("Submit Answers")
-
+        
         if submitted:
             correct = 0
             if q1 == "3 hours per day": correct += 1
             if q2 == "No, this falls under the EDSA (Creative/Fictional) exception.": correct += 1
             if q3 == "Intensive (Non-Violative)": correct += 1
-
+            
             if correct == 3:
-                st.success("🎉 Perfect Score! You are ready for the simulation.")
-                st.button("Start Audit Simulation 🚀", on_click=go_to_game)
+                st.session_state.quiz_passed = True
             else:
+                st.session_state.quiz_passed = False
                 st.error(f"You got {correct}/3 correct. Please review the definitions and try again.")
                 st.info("Hint: Review the '3-hour rule' and the difference between Fiction and Instructions.")
+
+    # NAVIGATION BUTTON MUST BE OUTSIDE THE FORM
+    if st.session_state.quiz_passed:
+        st.success("🎉 Perfect Score! You are ready for the simulation.")
+        st.button("Start Audit Simulation 🚀", on_click=go_to_game, type="primary")
 
 # ==========================================
 # PAGE 3: THE GAME (AUDIT SIMULATION)
 # ==========================================
 elif st.session_state.page == 'game':
-    # Re-using the game logic from the previous iteration
-
-    # Sidebar
+    # Sidebar stats
     st.sidebar.image("https://cdn-icons-png.flaticon.com/512/3048/3048398.png", width=80)
     st.sidebar.title("Audit Dashboard")
     st.sidebar.metric("Score", f"{st.session_state.score}")
     st.sidebar.metric("Streak", f"🔥 {st.session_state.streak}")
     st.sidebar.progress((st.session_state.current_q) / len(scenarios))
-
+    
     st.title("🏋️ Excessive Exercise Audit")
-
+    
     if st.session_state.current_q < len(scenarios):
         scenario = scenarios[st.session_state.current_q]
-
+        
         # Scenario Card
         st.markdown(f"### Case #{scenario['id']}: {scenario['category']}")
-
+        
         c1, c2 = st.columns(2)
         with c1:
             st.markdown("**User Prompt:**")
@@ -252,13 +259,14 @@ elif st.session_state.page == 'game':
         with c2:
             st.markdown("**Model Response:**")
             st.markdown(f'<div class="model-bubble">{scenario["response"]}</div>', unsafe_allow_html=True)
-
+            
         # Buttons
         if not st.session_state.show_explanation:
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
                 b1, b2 = st.columns(2)
                 with b1:
+                    # Violative Button
                     if st.button("🚨 Violative", use_container_width=True, type="primary"):
                         if scenario['answer'] == "Violative":
                             st.session_state.score += 1
@@ -272,6 +280,7 @@ elif st.session_state.page == 'game':
                         st.session_state.show_explanation = True
                         st.rerun()
                 with b2:
+                    # Non-Violative Button
                     if st.button("✅ Non-Violative", use_container_width=True):
                         if scenario['answer'] == "Non-Violative":
                             st.session_state.score += 1
@@ -284,7 +293,7 @@ elif st.session_state.page == 'game':
                             st.toast("Incorrect", icon="❌")
                         st.session_state.show_explanation = True
                         st.rerun()
-
+        
         else:
             # Explanation
             if st.session_state.last_answer_correct:
@@ -292,12 +301,12 @@ elif st.session_state.page == 'game':
             else:
                 st.error(f"❌ Incorrect. The correct verdict was {scenario['answer']}.")
                 st.info(f"**Policy Note:** {scenario['reasoning']}")
-
+            
             if st.button("Next Case ➡️", type="primary"):
                 st.session_state.current_q += 1
                 st.session_state.show_explanation = False
                 st.rerun()
-
+    
     else:
         # End Screen
         st.balloons()
@@ -305,9 +314,11 @@ elif st.session_state.page == 'game':
         final = st.session_state.score
         total = len(scenarios)
         st.metric("Final Accuracy", f"{int(final/total*100)}%", f"{final}/{total}")
-
+        
         if st.button("Restart Training 🔄"):
             st.session_state.page = 'lesson'
             st.session_state.current_q = 0
             st.session_state.score = 0
+            st.session_state.streak = 0
+            st.session_state.quiz_passed = False
             st.rerun()
